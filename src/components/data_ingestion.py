@@ -16,10 +16,21 @@ class DataIngestionConfig:
     test_data_path: str = os.path.join('artifacts', 'test.csv')    # Default path for test data
     raw_data_path: str = os.path.join('artifacts', 'data.csv')     # Default path for raw data
 
+'''This code defines a Python class named DataIngestionConfig using the @dataclass decorator. 
+The @dataclass decorator is a feature introduced in Python 3.7 that automatically generates special methods 
+like __init__, __repr__, __eq__, and __hash__ based on class variables.'''
+
+'''By using the @dataclass decorator, Python automatically generates special methods for the class based on its attributes. 
+This makes the class easier to use and understand, as you don't need to manually implement these methods.'''
+
 # Class for data ingestion process
 class DataIngestion:
     def __init__(self):
         self.ingestion_config = DataIngestionConfig()  # Initializing data ingestion configuration
+
+    '''__init__(self): This is the constructor method of the DataIngestion class. 
+    It gets called when a new instance of DataIngestion is created. 
+    Inside this constructor, an instance of DataIngestionConfig is created.'''
 
     # Method to initiate data ingestion process
     def initiate_data_ingestion(self):
@@ -58,11 +69,3 @@ class DataIngestion:
         except Exception as e:
             # Handling exceptions and raising custom exception
             raise CustomException(e, sys)
-
-# Entry point of the script
-if __name__ == "__main__":
-    data_ingestion = DataIngestion()  # Creating an instance of DataIngestion class
-    train_data_path, test_data_path = data_ingestion.initiate_data_ingestion()  # Initiating the data ingestion process
-
-    data_transformation = DataTransformation()
-    data_transformation.initiate_data_transformation(train_path= train_data_path, test_path= test_data_path)
