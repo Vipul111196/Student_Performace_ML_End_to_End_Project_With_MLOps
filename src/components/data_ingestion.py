@@ -6,6 +6,8 @@ from src.logger import logging  # Importing logging from src.logger module
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
+from src.components.data_transformation import DataTransformation
+from src.components.data_transformation import DataTransformationConfig
 
 # Data class for configuration parameters related to data ingestion
 @dataclass
@@ -59,5 +61,8 @@ class DataIngestion:
 
 # Entry point of the script
 if __name__ == "__main__":
-    obj = DataIngestion()  # Creating an instance of DataIngestion class
-    obj.initiate_data_ingestion()  # Initiating the data ingestion process
+    data_ingestion = DataIngestion()  # Creating an instance of DataIngestion class
+    train_data_path, test_data_path = data_ingestion.initiate_data_ingestion()  # Initiating the data ingestion process
+
+    data_transformation = DataTransformation()
+    data_transformation.initiate_data_transformation(train_path= train_data_path, test_path= test_data_path)
