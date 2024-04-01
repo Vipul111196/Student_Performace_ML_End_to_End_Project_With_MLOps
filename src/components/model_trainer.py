@@ -34,9 +34,9 @@ class ModelTrainer:
             y_test = test_array[:,-1]
 
             models = {
-                'Random Forest': RandomForestRegressor(verbose=False),
+                'Random Forest': RandomForestRegressor(verbose=0),
                 'Decision Tree': DecisionTreeRegressor(),
-                'Gradient Boosting': GradientBoostingRegressor(verbose=False),
+                'Gradient Boosting': GradientBoostingRegressor(verbose=0),
                 'Linear Regressor': LinearRegression(),
                 'XGB Regressor': XGBRegressor(),
                 'CatBoosting Regressor': CatBoostRegressor(verbose=False),
@@ -63,22 +63,8 @@ class ModelTrainer:
                 obj= best_model
             )
 
-            y_predicted = best_model.predict(X_test)
-            r2_value = r2_score(y_test, y_predicted)
-
-            return r2_value
+            return best_model_name, best_model_score
 
         except Exception as e:
             CustomException(e, sys)
-
-if __name__ == '__main__':
-    obj = DataIngestion()
-    train_data_path, test_data_path = obj.initiate_data_ingestion()
-
-    data_transformation = DataTransformation()
-    train_data_arr, test_data_arr, __ = data_transformation.initiate_data_transformation(train_path=train_data_path, test_path=test_data_path)
-
-    modeltrainer = ModelTrainer()
-    r2_score = modeltrainer.initiate_model_training(train_array= train_data_arr, test_array= test_data_arr)
-
-    print(r2_score)
+            
