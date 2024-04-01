@@ -34,12 +34,12 @@ class ModelTrainer:
             y_test = test_array[:,-1]
 
             models = {
-                'Random Forest': RandomForestRegressor(),
+                'Random Forest': RandomForestRegressor(verbose=False),
                 'Decision Tree': DecisionTreeRegressor(),
-                'Gradient Boosting': GradientBoostingRegressor(),
+                'Gradient Boosting': GradientBoostingRegressor(verbose=False),
                 'Linear Regressor': LinearRegression(),
                 'XGB Regressor': XGBRegressor(),
-                'CatBoosting Regressor': CatBoostRegressor(),
+                'CatBoosting Regressor': CatBoostRegressor(verbose=False),
                 'ADABoost Regressor': AdaBoostRegressor()
             }
 
@@ -47,7 +47,9 @@ class ModelTrainer:
 
             best_model_score = max(sorted(model_report.values()))
 
-            best_model_name = list(model_report.keys)[list(model_report.value().index(best_model_score))]
+            # best_model_name = list(model_report.keys)[list(model_report.value().index(best_model_score))]
+            best_model_name = list(model_report.keys())[list(model_report.values()).index(best_model_score)]
+
 
             best_model = models[best_model_name]
 
