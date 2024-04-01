@@ -33,14 +33,35 @@ class DataTransformation:
             
             num_pipeline = Pipeline(steps=[
                 ("imputer", SimpleImputer(strategy='mean')),
-                ('scaler', StandardScaler())
+                ('scaler', StandardScaler(with_mean=False))
             ])
+
+            '''
+            num_pipeline:
+
+            The pipeline consists of two steps:
+            - "imputer": It uses SimpleImputer to fill missing values in numerical features. 
+            The strategy used here is to replace missing values with the mean of the column.
+
+            - "scaler": It scales the features using StandardScaler. 
+            This step standardizes the features by removing the mean and scaling to unit variance. 
+            with_mean=False indicates that it centers the data before scaling by subtracting the mean.'''
             
             categorical_pipeline = Pipeline(steps=[
                 ('imputer', SimpleImputer(strategy='most_frequent')),
                 ('one_hot_encoder', OneHotEncoder()),
-                ('scaler', StandardScaler())
+                ('scaler', StandardScaler(with_mean=False))
             ])
+
+            '''
+            categorical_pipeline:
+
+            The pipeline also consists of three steps:
+            - "imputer": It uses SimpleImputer to fill missing values in categorical features. 
+            The strategy used here is to replace missing values with the most frequent value of the column.
+            - "one_hot_encoder": It performs one-hot encoding using OneHotEncoder. 
+            One-hot encoding converts categorical variables into binary vectors where each category is represented as a binary feature.
+            - "scaler": Similar to num_pipeline, it scales the features using StandardScaler with with_mean=False to center the data before scaling.'''
             
             logging.info(f'Categorical columns: {categorical_columns}')
             logging.info(f'Numerical columns: {numerical_columns}')
@@ -50,13 +71,32 @@ class DataTransformation:
             #     ('categorical_pipeline', categorial_pipeline, categorial_columns)  
             # ])
             
-            preprocessor = ColumnTransformer([
-                ('num_pipeline', num_pipeline, numerical_columns),
-                ('categorical_pipeline', categorical_pipeline, categorical_columns)
-            ])
+            preprocessor = ColumnTransformer(
+                [
+                ("num_pipeline", num_pipeline, numerical_columns),
+                ("categorical_pipeline", categorical_pipeline, categorical_columns)
+                ]
+            )
+
+            '''
+            ColumnTransformer:
+
+            The ColumnTransformer is created to apply different transformations to different columns of the input data.
+            It takes a list of tuples where each tuple consists of:
+            - A name: This is a string identifier for the transformation.
+            - A transformer: This is the pipeline or transformer to apply to the specified columns.
+            - Columns: This specifies the columns to apply the transformer to.
+
+            The ColumnTransformer is initialized with two transformations:
+
+            - "num_pipeline": This applies the num_pipeline to the columns specified by numerical_columns. 
+            This pipeline is designed for numerical features and includes steps for imputation and scaling.
+            -"categorical_pipeline": This applies the categorical_pipeline to the columns specified by categorical_columns. 
+            This pipeline is designed for categorical features and includes steps for imputation, one-hot encoding, and scaling.
+            '''
             
             logging.info('Categorical Features Created using One hot encoder')
-            logging.info('Numerical Columns encoding completed')
+            logging.info('Numerical Columns scaling completed')
 
             return preprocessor
         
@@ -67,6 +107,7 @@ class DataTransformation:
 
         try:
             train_df = pd.read_csv(train_path)
+
             logging.info(f'This is the training data 1 row ')
             test_df = pd.read_csv(test_path)
 
@@ -75,7 +116,6 @@ class DataTransformation:
 
             preprocessing_obj = self.get_data_transformer_object()
             target_column_name = 'math_score'
-            numerical_columns = ['writing_score', 'reading_score']
 
             input_feature_train_df = train_df.drop(columns= target_column_name, axis=1)
             target_feature_train_df=train_df[target_column_name]
@@ -88,8 +128,21 @@ class DataTransformation:
             input_feature_train_arr=preprocessing_obj.fit_transform(input_feature_train_df)
             input_feature_test_arr=preprocessing_obj.transform(input_feature_test_df)
 
+            '''
+            This line applies the preprocessing pipeline to the training and testing dataset input features, 
+            transforming them into an array suitable for training machine learning models. 
+            
+            The fit_transform() method is used here, which fits the transformers to the training and testing data and 
+            then transforms it.
+            '''
+
             train_arr = np.c_[input_feature_train_arr, np.array(target_feature_train_df)]
             test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]
+
+            '''
+            These lines concatenate the transformed input features with the corresponding target features. 
+            This likely creates the final arrays that will be used for training and testing machine learning models.
+            '''
 
             logging.info(f'Saved preprocessing object.')
 
@@ -101,6 +154,14 @@ class DataTransformation:
             )
 
             logging.info(f"Saved preprocessing object.")
+
+            '''
+            this line of code is essentially saving the preprocessing pipeline object (preprocessing_obj) 
+            to a file at the location specified by preprocessor_obj_file_path. 
+            This allows the preprocessing steps to be saved and loaded later for reuse, 
+            which can be useful in machine learning workflows where preprocessing steps 
+            need to be applied consistently to new data.
+            '''
 
             return (
                 train_arr,
